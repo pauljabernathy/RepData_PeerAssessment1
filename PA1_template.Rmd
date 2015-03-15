@@ -60,17 +60,17 @@ but that does not give us the day by day information used to make the histogram.
 To find out what the "average" day looks like, lets find the average number of steps across all the days for each of the 288 intervals.  Then we can plot the number of steps per interval and see how interval 1 differs from interval 2, interval 150, etc.
 
 ```{r}
-indices <- 1:length(steps);
-totals <- rep(0,288);
-  head(steps);
-  head(activity$steps)
-  mean(activity$steps, na.rm=T)
-  mean(steps, na.rm=T)
-  
+stepsTotals <- function(activity) {
+  indices <- 1:length(steps);
+  totals <- rep(0,288);
+  steps <- activity$steps;
   for(i in 1:287) {
     totals[i] <- sum(steps[indices[which(indices %% 288 == i)]], na.rm=TRUE);
   }
   totals[288] <- sum(steps[indices[which(indices %% 288 == 0)]], na.rm=TRUE);
+  totals;
+}
+totals <- stepsTotals(activity);
 ```
 This gives us a vector of length 288, where each index contains the average number of steps for that interval.  If you want to see the actual numbers, they are:
 ```{r}
@@ -78,7 +78,7 @@ totals;
 ```
 The best way to communicate this is with a plot.
 ```{r}
-plot(totals, type="l")
+plot(totals / 61, type="l")
 ```
 You see how there is virtually no activity for the first quarter or so, then it rises sharply and fluctuates throughout the day, tappering off again toward the end.  This makes sense for some who goes to bed at 11pm or midnight, sleeps till 7 or so, and gets up and starts moving about.
 
@@ -101,28 +101,37 @@ sum(!is.na(steps))
 So you can see that there are 17568 observations, of which 2304 are NA and 15264 are valid.
 
 Up to this point, we have dealt with them by simply throwing them out.  But that may not be the best strategy since the number of steps per day and per interval could be significanly different with them in.  However, since we don't know what they are, we can't just fill them in with any value we want.  One reasonable way is simply to fill them in with the mean value for that interval.
-
 ```{r}
-
-adjustedSteps <- steps
+fillInNAs <- function(activity) {
+  totals <- stepsTotals(activity);
+  adjustedSteps <- activity$steps
+  numDays <- length(as.factor(activity$days));
   for(i in 1:length(adjustedSteps)) {
     if(is.na(steps[i])) {
       if(i %% 288 == 0) {
-        adjustedSteps[i] <- totals[288];
+        adjustedSteps[i] <- totals[288] / 61;
       } else {
-        adjustedSteps[i] <- totals[ i %% 288];
+        adjustedSteps[i] <- totals[ i %% 288] / 61;
       }
     }
   }
-  adjustedTotals <- rep(0,288);
-  for(i in 1:287) {
-    adjustedTotals[i] <- sum(adjustedSteps[indices[which(indices %% 288 == i)]]);
-  }
-  adjustedTotals[288] <- sum(adjustedSteps[indices[which(indices %% 288 == 0)]]);
+  adjustedSteps;
+}
+
+getAdjustedTotals <- function(activity) {
+  adjustedSteps <- fillInNAs(activity);
+  adjustedActivity <- data.frame(adjustedSteps, date, interval);
+  names(adjustedActivity) <- names(activity);
+  head(adjustedActivity);
+  adjustedTotals <- stepsTotals(adjustedActivity);
   adjustedTotals;
-plot(adjustedTotals, type="l")
+}
+
+adjustedTotals <- getAdjustedTotals(activity);
+plot(adjustedTotals / 61, type="l")
 ```
 
+There is little to no change in the overal shape of the adjusted graph.  It is mainly just scaled up a little.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

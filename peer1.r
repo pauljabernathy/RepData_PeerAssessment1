@@ -18,7 +18,7 @@ stepsHist <- function(activity) {
 }
 
 #does the same as above but with compact code, using R's OTB sum()
-stepsHist2 <- function(activity) {
+stepsTotals <- function(activity) {
   totals <- rep(0,288);
   steps <- activity$steps;
   for(i in 1:287) {
@@ -35,6 +35,31 @@ stepsHistByDate <- function(activity) {
     dayTotals <- c(dayTotals, sum(steps[date == currentDate], na.rm=TRUE));
   }
   dayTotals;
+}
+
+fillInNAs <- function(activity) {
+  totals <- stepsTotals(activity);
+  adjustedSteps <- activity$steps
+  numDays <- length(as.factor(activity$days));
+  for(i in 1:length(adjustedSteps)) {
+    if(is.na(steps[i])) {
+      if(i %% 288 == 0) {
+        adjustedSteps[i] <- totals[288] / 61;
+      } else {
+        adjustedSteps[i] <- totals[ i %% 288] / 61;
+      }
+    }
+  }
+  adjustedSteps;
+}
+
+getAdjustedTotals <- function(activity) {
+  adjustedSteps <- fillInNAs(activity);
+  adjustedActivity <- data.frame(adjustedSteps, date, interval);
+  names(adjustedActivity) <- names(activity);
+  head(adjustedActivity);
+  adjustedTotals <- stepsTotals(adjustedActivity);
+  adjustedTotals;
 }
 
 isWeekend <- function(day) {
