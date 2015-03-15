@@ -8,18 +8,56 @@ output:
 
 ## Loading and preprocessing the data
 
+Once the file is downloaded and unzipped into your working directory, you load it into R with the "read.csv()" function:
+
 ```{r loading}
 activity <- read.csv('activity.csv')
-attach(activity);
-head(activity);
 ```
 
+The "name" function shows you the names of the data frame.  To make a data frame you will use often easier to work with, use the "attach()" function so you won't have to keep typing the name out to access the columns.
+
+```{r}
+names(activity)
+attach(activity)
+```
+You can use "head()" to view the first few rows and get an idea of what the data frame looks like.
+
+```{r}
+head(activity, 10)
+```
+In this case, the first few rows all have NA for the number of steps taken in that interval.  This will have to be addressed at a later time.
 
 ## What is mean total number of steps taken per day?
 
+To fine the mean total number of steps taken per day, let's first find the number of steps taken each day.  That requires adding up each of the 228 measurements for each of the 61 days.  It can be done as follows:
 
+```{r}
+dayTotals <- vector();#rep(0, length(date));
+date <- activity$date
+for(currentDate in levels(date)) {
+  dayTotals <- c(dayTotals, sum(steps[date == currentDate], na.rm=TRUE));
+}
+dayTotals;
+
+mean(dayTotals);
+median(dayTotals);
+```
+
+Taking a histogram, with get
+
+```{r}
+hist(dayTotals, breaks=seq(0,22000,by=2200));
+```
+
+Of couse, we could have gotten the mean number of steps per day, 9354.23, by doing 
+```{r}
+sum(steps, na.rm=TRUE) / length(levels(date));
+```
+but that does not give us the day by day information used to make the histogram.
 
 ## What is the average daily activity pattern?
+
+To find out what the "average" day looks like, lets find the average number of steps across all the days for each of the 288 intervals.  Then we can plot the number of steps per interval and see how interval 1 differs from interval 2, interval 150, etc.
 
 ```{r}
 indices <- 1:length(steps);
@@ -33,12 +71,19 @@ totals <- rep(0,288);
     totals[i] <- sum(steps[indices[which(indices %% 288 == i)]], na.rm=TRUE);
   }
   totals[288] <- sum(steps[indices[which(indices %% 288 == 0)]], na.rm=TRUE);
-  totals;
+```
+This gives us a vector of length 288, where each index contains the average number of steps for that interval.  If you want to see the actual numbers, they are:
+```{r}
+totals;
+```
+The best way to communicate this is with a plot.
+```{r}
 plot(totals, type="l")
 ```
+You see how there is virtually no activity for the first quarter or so, then it rises sharply and fluctuates throughout the day, tappering off again toward the end.  This makes sense for some who goes to bed at 11pm or midnight, sleeps till 7 or so, and gets up and starts moving about.
 
 ## Imputing missing values
 
-
+Looking at the data, it is not hard to see that there are several days with no data for the number of steps.  It simply says "NA" instead of an actual number.
 
 ## Are there differences in activity patterns between weekdays and weekends?
