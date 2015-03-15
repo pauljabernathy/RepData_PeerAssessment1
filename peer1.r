@@ -62,6 +62,7 @@ getAdjustedTotals <- function(activity) {
   adjustedTotals;
 }
 
-isWeekend <- function(day) {
+isWeekend <- function(date) {
+  day <- weekdays(date);
   day == "Saturday" | day == "Sunday"
 }
