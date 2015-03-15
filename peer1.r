@@ -29,5 +29,14 @@ stepsHist2 <- function(activity) {
 }
 
 stepsHistByDate <- function(activity) {
-  #do something 
+  dayTotals <- vector();#rep(0, length(date));
+  date <- activity$date
+  for(currentDate in levels(date)) {
+    dayTotals <- c(dayTotals, sum(steps[date == currentDate], na.rm=TRUE));
+  }
+  dayTotals;
+}
+
+isWeekend <- function(day) {
+  day == "Saturday" | day == "Sunday"
 }
