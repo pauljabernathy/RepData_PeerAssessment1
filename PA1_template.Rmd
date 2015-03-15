@@ -8,6 +8,11 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r loading}
+activity <- read.csv('activity.csv')
+attach(activity);
+head(activity);
+```
 
 
 ## What is mean total number of steps taken per day?
@@ -16,7 +21,21 @@ output:
 
 ## What is the average daily activity pattern?
 
-
+```{r}
+indices <- 1:length(steps);
+totals <- rep(0,288);
+  head(steps);
+  head(activity$steps)
+  mean(activity$steps, na.rm=T)
+  mean(steps, na.rm=T)
+  
+  for(i in 1:287) {
+    totals[i] <- sum(steps[indices[which(indices %% 288 == i)]], na.rm=TRUE);
+  }
+  totals[288] <- sum(steps[indices[which(indices %% 288 == 0)]], na.rm=TRUE);
+  totals;
+plot(totals, type="l")
+```
 
 ## Imputing missing values
 
