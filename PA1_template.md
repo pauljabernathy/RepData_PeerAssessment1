@@ -48,7 +48,7 @@ In this case, the first few rows all have NA for the number of steps taken in th
 
 ## What is mean total number of steps taken per day?
 
-To fine the mean total number of steps taken per day, let's first find the number of steps taken each day.  That requires adding up each of the 228 measurements for each of the 61 days.  It can be done as follows:
+To find the mean total number of steps taken per day, let's first find the number of steps taken each day.  That requires adding up each of the 228 measurements for each of the 61 days.  It can be done as follows:
 
 
 ```r
@@ -57,17 +57,13 @@ date <- activity$date
 for(currentDate in levels(date)) {
   dayTotals <- c(dayTotals, sum(steps[date == currentDate], na.rm=TRUE));
 }
-dayTotals;
+hist(dayTotals, breaks=seq(0,22000,by=2200));
 ```
 
-```
-##  [1]     0   126 11352 12116 13294 15420 11015     0 12811  9900 10304
-## [12] 17382 12426 15098 10139 15084 13452 10056 11829 10395  8821 13460
-## [23]  8918  8355  2492  6778 10119 11458  5018  9819 15414     0 10600
-## [34] 10571     0 10439  8334 12883  3219     0     0 12608 10765  7336
-## [45]     0    41  5441 14339 15110  8841  4472 12787 20427 21194 14478
-## [56] 11834 11162 13646 10183  7047     0
-```
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+**To find the mean and the median, we can make use of R's appropriately named mean() and median() functions:**
+
 
 ```r
 mean(dayTotals);
@@ -85,16 +81,7 @@ median(dayTotals);
 ## [1] 10395
 ```
 
-Taking a histogram, with get
-
-
-```r
-hist(dayTotals, breaks=seq(0,22000,by=2200));
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
-
-Of couse, we could have gotten the mean number of steps per day, 9354.23, by doing 
+Of couse, we could have gotten the mean number of steps per day, 9354.23, by manually summing up the number of steps and dividing by the number of days. 
 
 ```r
 sum(steps, na.rm=TRUE) / length(levels(date));
@@ -103,7 +90,7 @@ sum(steps, na.rm=TRUE) / length(levels(date));
 ```
 ## [1] 9354.23
 ```
-but that does not give us the day by day information used to make the histogram.
+
 
 ## What is the average daily activity pattern?
 
@@ -165,6 +152,7 @@ plot(totals / 61, type="l")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
 You see how there is virtually no activity for the first quarter or so, then it rises sharply and fluctuates throughout the day, tappering off again toward the end.  This makes sense for some who goes to bed at 11pm or midnight, sleeps till 7 or so, and gets up and starts moving about.
 
 To find the interval with the highest mean number of steps, do

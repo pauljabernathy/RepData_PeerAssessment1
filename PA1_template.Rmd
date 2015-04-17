@@ -29,31 +29,29 @@ In this case, the first few rows all have NA for the number of steps taken in th
 
 ## What is mean total number of steps taken per day?
 
-To fine the mean total number of steps taken per day, let's first find the number of steps taken each day.  That requires adding up each of the 228 measurements for each of the 61 days.  It can be done as follows:
+To find the mean total number of steps taken per day, let's first find the number of steps taken each day.  That requires adding up each of the 228 measurements for each of the 61 days.  It can be done as follows:
 
 ```{r}
-dayTotals <- vector();#rep(0, length(date));
+dayTotals <- vector();
 date <- activity$date
 for(currentDate in levels(date)) {
   dayTotals <- c(dayTotals, sum(steps[date == currentDate], na.rm=TRUE));
 }
-dayTotals;
+hist(dayTotals, breaks=seq(0,22000,by=2200));
+```
 
+**To find the mean and the median, we can make use of R's appropriately named mean() and median() functions:**
+
+```{r}
 mean(dayTotals);
 median(dayTotals);
 ```
 
-Taking a histogram, with get
-
-```{r}
-hist(dayTotals, breaks=seq(0,22000,by=2200));
-```
-
-Of couse, we could have gotten the mean number of steps per day, 9354.23, by doing 
+Of couse, we could have gotten the mean number of steps per day, 9354.23, by manually summing up the number of steps and dividing by the number of days. 
 ```{r}
 sum(steps, na.rm=TRUE) / length(levels(date));
 ```
-but that does not give us the day by day information used to make the histogram.
+
 
 ## What is the average daily activity pattern?
 
@@ -80,6 +78,7 @@ The best way to communicate this is with a plot.
 ```{r}
 plot(totals / 61, type="l")
 ```
+
 You see how there is virtually no activity for the first quarter or so, then it rises sharply and fluctuates throughout the day, tappering off again toward the end.  This makes sense for some who goes to bed at 11pm or midnight, sleeps till 7 or so, and gets up and starts moving about.
 
 To find the interval with the highest mean number of steps, do
@@ -137,6 +136,7 @@ There is little to no change in the overal shape of the adjusted graph.  It is m
 
 Let's see if user behavior is different on the weekend than on weekedays.
 ```{r}
+f <- factor(c("weekend","weekday"));
 isWeekend <- function(date) {
   day <- weekdays(date);
   day == "Saturday" | day == "Sunday"
